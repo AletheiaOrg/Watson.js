@@ -2,18 +2,18 @@ var https = require('https');
 var url = require('url');
 var querystring = require('querystring');
 var extend = require('util')._extend;
-var flatten = require('../lib/flatten');
+var flatten = require('./flatten');
 
 var appInfo = JSON.parse(process.env.VCAP_APPLICATION || "{}");
 
 // exporting the watson module to be required by the end user
-module.exports.watson =  function(watsonConfig, data, callback) {
+module.exports.watson =  function(auth, data, callback) {
 
   // var W = new Watson({config}); // this is what the end user gonna put
 // defaults for dev outside bluemix
-var service_url = watsonConfig.service_url;
-var service_username = watsonConfig.service_username;
-var service_password = watsonConfig.service_password;
+var service_url = auth.watsonConfig.service_url;
+var service_username = auth.watsonConfig.service_username;
+var service_password = auth.watsonConfig.service_password;
 
 if (process.env.VCAP_SERVICES) {
   console.log('Parsing VCAP_SERVICES');
@@ -27,16 +27,16 @@ if (process.env.VCAP_SERVICES) {
     service_username = svc.username;
     service_password = svc.password;
   } else {
-    //console.log('The service '+service_name+' is not in the VCAP_SERVICES, did you forget to bind it?');
+    console.log('The service '+service_name+' is not in the VCAP_SERVICES, did you forget to bind it?');
   }
 
   } else {
-    //console.log('No VCAP_SERVICES found in ENV, using defaults for local development');
+    console.log('No VCAP_SERVICES found in ENV, using defaults for local development');
   }
 
-  // console.log('service_url = ' + service_url);
-  // console.log('service_username = ' + service_username);
-  // console.log('service_password = ' + new Array(service_password.length).join("X"));
+  console.log('service_url = ' + service_url);
+  console.log('service_username = ' + service_username);
+  console.log('service_password = ' + new Array(service_password.length).join("X"));
 
   var auth = 'Basic ' + new Buffer(service_username + ':' + service_password).toString('base64');
 
