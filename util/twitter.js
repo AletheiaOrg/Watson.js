@@ -125,6 +125,26 @@ var Personify = function(auth) {
       return wantedChars;
     };
 
+// stop streaming with timer
+    var stopStream = function(time, context){
+      setTimeout(function () {
+        context.stop();
+      }, time);
+    };
+
+// call stream. Created to avoid duplication. Can be used more if more stream methods created
+    var streams = function(parameterObj, cb, stream){
+      var translateCode = createLangs(parameterObj);
+      stream.on('tweet', function (tweet) {
+        var texts = filterTweet(tweet.text);
+        translateModule.translate(auth, texts, translateCode, parameterObj.outputType, cb);
+      });
+
+      stream.on('error', function(err){
+        console.log(err)
+        cb(null, err);
+      });
+    }
 // =============================== Helper functions for Translate methods above ====================
 
 // ======================= Watson Machine Translation and Twitter REST below =======================
@@ -193,13 +213,18 @@ var Personify = function(auth) {
 // ==================== Watson Machine Translation and Twitter Streaming below =====================
 
   Personify.prototype.streamTranslate = function(params, callback){
-    var translateCode = createLangs(params);
-    var stream = T.stream('statuses/filter', { track : params.track, language : params.fromLanguage });
+    var stream = T.stream('statuses/filter', 
+      { 
+        track : params.track, 
+        language : params.fromLanguage 
+      });
 
-    stream.on('tweet', function (tweet) {
-      var texts = filterTweet(tweet.text);
-      translateModule.translate(auth, texts, translateCode, params.outputType, callback);
-    });
+    if (params.hasOwnProperty('stop')){
+      streams(params, callback, stream);
+      stopStream(params.stop, stream);
+    } else {
+      streams(params, callback, stream);
+    }
   }
 
 // ==================== Watson Machine Translation and Twitter Streaming above =====================
