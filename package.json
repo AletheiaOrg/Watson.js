@@ -1,7 +1,7 @@
 {
   "name": "personify",
   "description": "A JavaScript based library that allows easy access to IBM Watson features utilizing Twitter data",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "./util/twitter",
   "author": {
     "name": "Essam Al Joubori, Phil Elauria, Rohan Agrawal"

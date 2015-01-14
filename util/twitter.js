@@ -219,6 +219,7 @@ var Personify = function(auth) {
 // ==================== Watson Machine Translation and Twitter Streaming below =====================
 
   Personify.prototype.streamTranslate = function(params, callback){
+    
     var stream = T.stream('statuses/filter', 
       { 
         track : params.track, 
